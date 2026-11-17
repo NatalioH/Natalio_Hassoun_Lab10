@@ -1,0 +1,116 @@
+// Windows and Linux agents use their virtual environment directly.
+def vpython(String arguments) {
+    if (isUnix()) {
+        sh "venv/bin/python ${arguments}"
+    } else {
+        bat "@venv\\Scripts\\python.exe ${arguments}"
+    }
+}
+
+pipeline {
+    agent any
+    options {
+        disableConcurrentBuilds()
+        timeout(time: 15, unit: 'MINUTES')
+        skipDefaultCheckout(true)
+    }
+    parameters {
+        string(name: 'PYTHON_COMMAND', defaultValue: 'python',
+               description: 'Python 3.10+ command; Windows may need py -3 or a quoted full path.')
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                deleteDir()
+                checkout scm
+            }
+        }
+        stage('Setup') {
+            steps {
+                script {
+                    env.DEPLOY_ROOT = "${env.WORKSPACE}@deployments"
+                    if (isUnix()) {
+                        sh "${params.PYTHON_COMMAND} -m venv venv"
+                        sh 'mkdir -p reports'
+                    } else {
+                        bat "@${params.PYTHON_COMMAND} -m venv venv"
+                        bat '@if not exist reports mkdir reports'
+                    }
+                    vpython('-m pip install -r requirements.txt')
+                    vpython('--version')
+                    vpython('-m pip freeze')
+                }
+            }
+        }
+        stage('Lint') {
+            steps {
+                script { vpython('-m flake8 app.py deploy.py tests') }
+                echo 'Lint passed: no style violations.'
+            }
+        }
+        stage('Test') {
+            steps {
+                script {
+                    vpython('-m pytest tests -v --junitxml=reports/tests.xml')
+                }
+            }
+        }
+        stage('Coverage') {
+            steps {
+                script {
+                    vpython('-m coverage run --branch --source=app -m pytest tests -v')
+                    vpython('-m coverage xml -o reports/coverage.xml')
+                    vpython('-m coverage html -d reports/coverage_html')
+                    vpython('-m coverage report -m --fail-under=90')
+                }
+            }
+        }
+        stage('Security Scan') {
+            steps {
+                script {
+                    // Preserve JSON even when findings make Bandit fail.
+                    int status
+                    if (isUnix()) {
+                        status = sh(script: 'venv/bin/python -m bandit app.py deploy.py -f json -o reports/bandit.json', returnStatus: true)
+                        sh 'cat reports/bandit.json'
+                    } else {
+                        status = bat(script: '@venv\\Scripts\\python.exe -m bandit app.py deploy.py -f json -o reports/bandit.json', returnStatus: true)
+                        bat '@type reports\\bandit.json'
+                    }
+                    if (status != 0) {
+                        error("Bandit failed with exit code ${status}; deployment blocked.")
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                script {
+                    if (isUnix()) {
+                        sh 'venv/bin/python deploy.py --target "$DEPLOY_ROOT/$BUILD_NUMBER"'
+                        sh 'venv/bin/python "$DEPLOY_ROOT/$BUILD_NUMBER/app.py" > reports/deployment-output.txt'
+                        sh 'cp "$DEPLOY_ROOT/$BUILD_NUMBER/manifest.json" reports/deployment-manifest.json'
+                        sh 'cat reports/deployment-output.txt'
+                    } else {
+                        bat '@venv\\Scripts\\python.exe deploy.py --target "%DEPLOY_ROOT%/%BUILD_NUMBER%"'
+                        bat '@venv\\Scripts\\python.exe "%DEPLOY_ROOT%/%BUILD_NUMBER%/app.py" > reports\\deployment-output.txt'
+                        bat '@copy /Y "%DEPLOY_ROOT%/%BUILD_NUMBER%/manifest.json" reports\\deployment-manifest.json'
+                        bat '@type reports\\deployment-output.txt'
+                    }
+                    String output = readFile('reports/deployment-output.txt').trim()
+                    if (output != 'Hello, World from Nathalio Hassoun!') {
+                        error('Deployment smoke test returned an unexpected greeting.')
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: 'reports/**/*', allowEmptyArchive: true,
+                             fingerprint: true
+        }
+        success { echo 'All CI/CD stages passed; local deployment verified.' }
+        cleanup { deleteDir() }
+    }
+}
