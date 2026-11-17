@@ -94,7 +94,7 @@ pipeline {
                     } else {
                         bat '@venv\\Scripts\\python.exe deploy.py --target "%DEPLOY_ROOT%/%BUILD_NUMBER%"'
                         bat '@venv\\Scripts\\python.exe "%DEPLOY_ROOT%/%BUILD_NUMBER%/app.py" > reports\\deployment-output.txt'
-                        bat '@copy /Y "%DEPLOY_ROOT%/%BUILD_NUMBER%/manifest.json" reports\\deployment-manifest.json'
+                        bat '@copy /Y "%DEPLOY_ROOT%\\%BUILD_NUMBER%\\manifest.json" reports\\deployment-manifest.json'
                         bat '@type reports\\deployment-output.txt'
                     }
                     String output = readFile('reports/deployment-output.txt').trim()
