@@ -1,0 +1,10 @@
+{
+  "repository": "https://github.com/NatalioH/Natalio_Hassoun_Lab10",
+  "run_url": "https://github.com/NatalioH/Natalio_Hassoun_Lab10/actions/runs/44186545389",
+  "commit": "25a1a6699a0c2b7d3c6d0857a6c92b38a6fbb6e7",
+  "Windows": "SUCCESS",
+  "Linux": "SUCCESS",
+  "tests_per_platform": 4,
+  "application_coverage_percent": 100,
+  "bandit_findings_per_platform": 0
+}
