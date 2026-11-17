@@ -1,0 +1,99 @@
+name: Jenkins validation - Windows and Linux
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - app.py
+      - deploy.py
+      - tests/**
+      - requirements.txt
+      - Jenkinsfile_Nathalio_Hassoun
+      - .github/workflows/jenkins-validation.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jenkins:
+    name: Jenkins on ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run the submitted Jenkins pipeline
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $env:JENKINS_HOME = Join-Path $env:RUNNER_TEMP 'lab10-jenkins'
+          $env:JENKINS_HOME = $env:JENKINS_HOME.Replace('\', '/')
+          $homeDir = $env:JENKINS_HOME
+          New-Item -ItemType Directory -Force "$homeDir/plugins", "$homeDir/init.groovy.d", 'ci-evidence' | Out-Null
+          Invoke-WebRequest 'https://get.jenkins.io/war-stable/2.580.2/jenkins.war' -OutFile "$homeDir/jenkins.war"
+          Invoke-WebRequest 'https://github.com/jenkinsci/plugin-installation-manager-tool/releases/download/2.16.0/jenkins-plugin-manager-2.16.0.jar' -OutFile "$homeDir/plugins.jar"
+          & java -jar "$homeDir/plugins.jar" --war "$homeDir/jenkins.war" --plugin-download-directory "$homeDir/plugins" --plugins workflow-aggregator git ssh-agent
+          if ($LASTEXITCODE -ne 0) { throw 'Jenkins plugin installation failed' }
+          $initScript = @'
+          import jenkins.model.Jenkins
+          import hudson.plugins.git.GitSCM
+          import org.jenkinsci.plugins.workflow.job.WorkflowJob
+          import org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition
+          def j = Jenkins.get()
+          j.setNumExecutors(1)
+          def job = j.createProject(WorkflowJob, 'Python-CI-CD')
+          def scm = new GitSCM('https://github.com/NatalioH/Natalio_Hassoun_Lab10.git')
+          scm.branches = [new hudson.plugins.git.BranchSpec(System.getenv('GITHUB_SHA'))]
+          def definition = new CpsScmFlowDefinition(scm, 'Jenkinsfile_Nathalio_Hassoun')
+          definition.setLightweight(false)
+          job.setDefinition(definition)
+          job.save()
+          j.save()
+          job.scheduleBuild2(0)
+          '@
+          Set-Content -Path "$homeDir/init.groovy.d/lab.groovy" -Value $initScript -Encoding utf8
+          $javaArgs = @('-Djenkins.install.runSetupWizard=false', '-jar', "$homeDir/jenkins.war", '--httpListenAddress=127.0.0.1', '--httpPort=18080')
+          $jenkins = Start-Process java -ArgumentList $javaArgs -PassThru -RedirectStandardOutput "$homeDir/server-out.log" -RedirectStandardError "$homeDir/server-err.log"
+          $complete = $false
+          try {
+            $deadline = (Get-Date).AddMinutes(17)
+            while ((Get-Date) -lt $deadline) {
+              if ($jenkins.HasExited) { throw 'Jenkins stopped before completing the build' }
+              try {
+                $build = Invoke-RestMethod 'http://127.0.0.1:18080/job/Python-CI-CD/1/api/json' -TimeoutSec 10
+                if (-not $build.building -and $build.result) {
+                  $complete = $true
+                  break
+                }
+              } catch { }
+              Start-Sleep -Seconds 5
+            }
+            if (-not $complete) { throw 'Timed out waiting for Jenkins build' }
+            $build | ConvertTo-Json -Depth 12 | Set-Content 'ci-evidence/build.json'
+            Invoke-WebRequest 'http://127.0.0.1:18080/job/Python-CI-CD/1/consoleText' -OutFile 'ci-evidence/Jenkins_Console_Output.txt'
+            Get-Content 'ci-evidence/Jenkins_Console_Output.txt'
+            Copy-Item "$homeDir/jobs/Python-CI-CD/builds/1/archive/reports" 'ci-evidence/reports' -Recurse
+            if ($build.result -ne 'SUCCESS') { throw "Jenkins result: $($build.result)" }
+            "### Jenkins: SUCCESS on $env:RUNNER_OS" >> $env:GITHUB_STEP_SUMMARY
+            "Job Python-CI-CD #1 completed. See the artifact for console output, tests, coverage, Bandit and deployment evidence." >> $env:GITHUB_STEP_SUMMARY
+          } finally {
+            Copy-Item "$homeDir/server-*.log" 'ci-evidence' -ErrorAction SilentlyContinue
+            if (-not $jenkins.HasExited) { Stop-Process -Id $jenkins.Id -Force }
+          }
+      - name: Preserve Jenkins build evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jenkins-evidence-${{ runner.os }}
+          path: ci-evidence/
