@@ -1,0 +1,316 @@
+Started
+Checking out git /workspace/scratch/9552ff331023/Lab10_Submission/jenkins_project into /workspace/scratch/9552ff331023/jenkins_home/workspace/Python-CI-CD@script/989862c18cfa7c57e8d1cf806fc5b553f05ab00667bcbf109b2c605bfe9e15b4 to read Jenkinsfile_Nathalio_Hassoun
+The recommended git tool is: NONE
+No credentials specified
+Cloning the remote Git repository
+Cloning repository /workspace/scratch/9552ff331023/Lab10_Submission/jenkins_project
+ > git init /workspace/scratch/9552ff331023/jenkins_home/workspace/Python-CI-CD@script/989862c18cfa7c57e8d1cf806fc5b553f05ab00667bcbf109b2c605bfe9e15b4 # timeout=10
+Fetching upstream changes from /workspace/scratch/9552ff331023/Lab10_Submission/jenkins_project
+ > git --version # timeout=10
+ > git --version # 'git version 2.52.0'
+ > git fetch --tags --force --progress -- /workspace/scratch/9552ff331023/Lab10_Submission/jenkins_project +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url /workspace/scratch/9552ff331023/Lab10_Submission/jenkins_project # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 2aa6c0f78b38d09f312637d28359213ea9e36d29 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 2aa6c0f78b38d09f312637d28359213ea9e36d29 # timeout=10
+Commit message: "Implement Python CI/CD lab with coverage security scanning and local deployment"
+First time build. Skipping changelog.
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /workspace/scratch/9552ff331023/jenkins_home/workspace/Python-CI-CD
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 15 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Checkout)
+[Pipeline] deleteDir
+[Pipeline] checkout
+The recommended git tool is: NONE
+No credentials specified
+Cloning the remote Git repository
+Cloning repository /workspace/scratch/9552ff331023/Lab10_Submission/jenkins_project
+ > git init /workspace/scratch/9552ff331023/jenkins_home/workspace/Python-CI-CD # timeout=10
+Fetching upstream changes from /workspace/scratch/9552ff331023/Lab10_Submission/jenkins_project
+ > git --version # timeout=10
+ > git --version # 'git version 2.52.0'
+ > git fetch --tags --force --progress -- /workspace/scratch/9552ff331023/Lab10_Submission/jenkins_project +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url /workspace/scratch/9552ff331023/Lab10_Submission/jenkins_project # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 2aa6c0f78b38d09f312637d28359213ea9e36d29 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 2aa6c0f78b38d09f312637d28359213ea9e36d29 # timeout=10
+Commit message: "Implement Python CI/CD lab with coverage security scanning and local deployment"
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Setup)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] sh
++ python -m venv venv
+[Pipeline] sh
++ mkdir -p reports
+[Pipeline] isUnix
+[Pipeline] sh
++ venv/bin/python -m pip install -r requirements.txt
+Collecting flake8==7.5.0 (from -r requirements.txt (line 1))
+  Using cached flake8-7.5.0-py2.py3-none-any.whl.metadata (3.8 kB)
+Collecting pytest==9.2.0 (from -r requirements.txt (line 2))
+  Using cached pytest-9.2.0-py3-none-any.whl.metadata (7.9 kB)
+Collecting coverage==7.17.3 (from -r requirements.txt (line 3))
+  Using cached coverage-7.17.3-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (8.3 kB)
+Collecting bandit==1.9.4 (from -r requirements.txt (line 4))
+  Using cached bandit-1.9.4-py3-none-any.whl.metadata (7.1 kB)
+Collecting mccabe<0.8.0,>=0.7.0 (from flake8==7.5.0->-r requirements.txt (line 1))
+  Using cached mccabe-0.7.0-py2.py3-none-any.whl.metadata (5.0 kB)
+Collecting pycodestyle<2.16.0,>=2.15.0 (from flake8==7.5.0->-r requirements.txt (line 1))
+  Using cached pycodestyle-2.15.0-py2.py3-none-any.whl.metadata (4.5 kB)
+Collecting pyflakes<4.2.0,>=4.1.0 (from flake8==7.5.0->-r requirements.txt (line 1))
+  Using cached pyflakes-4.1.0-py2.py3-none-any.whl.metadata (3.7 kB)
+Collecting iniconfig>=2 (from pytest==9.2.0->-r requirements.txt (line 2))
+  Using cached iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+Collecting packaging>=24 (from pytest==9.2.0->-r requirements.txt (line 2))
+  Using cached packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+Collecting pluggy<2,>=1.6 (from pytest==9.2.0->-r requirements.txt (line 2))
+  Using cached pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+Collecting pygments>=2.15 (from pytest==9.2.0->-r requirements.txt (line 2))
+  Using cached pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+Collecting PyYAML>=5.3.1 (from bandit==1.9.4->-r requirements.txt (line 4))
+  Using cached pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+Collecting stevedore>=1.20.0 (from bandit==1.9.4->-r requirements.txt (line 4))
+  Using cached stevedore-5.10.0-py3-none-any.whl.metadata (2.3 kB)
+Collecting rich (from bandit==1.9.4->-r requirements.txt (line 4))
+  Using cached rich-15.0.0-py3-none-any.whl.metadata (18 kB)
+Collecting markdown-it-py>=2.2.0 (from rich->bandit==1.9.4->-r requirements.txt (line 4))
+  Using cached markdown_it_py-4.3.0-py3-none-any.whl.metadata (7.9 kB)
+Collecting mdurl~=0.1 (from markdown-it-py>=2.2.0->rich->bandit==1.9.4->-r requirements.txt (line 4))
+  Using cached mdurl-0.1.2-py3-none-any.whl.metadata (1.6 kB)
+Using cached flake8-7.5.0-py2.py3-none-any.whl (57 kB)
+Using cached pytest-9.2.0-py3-none-any.whl (411 kB)
+Using cached coverage-7.17.3-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (264 kB)
+Using cached bandit-1.9.4-py3-none-any.whl (134 kB)
+Using cached iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+Using cached mccabe-0.7.0-py2.py3-none-any.whl (7.3 kB)
+Using cached packaging-26.3-py3-none-any.whl (129 kB)
+Using cached pluggy-1.7.0-py3-none-any.whl (27 kB)
+Using cached pycodestyle-2.15.0-py2.py3-none-any.whl (31 kB)
+Using cached pyflakes-4.1.0-py2.py3-none-any.whl (66 kB)
+Using cached pygments-2.21.0-py3-none-any.whl (1.3 MB)
+Using cached pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+Using cached stevedore-5.10.0-py3-none-any.whl (56 kB)
+Using cached rich-15.0.0-py3-none-any.whl (310 kB)
+Using cached markdown_it_py-4.3.0-py3-none-any.whl (96 kB)
+Using cached mdurl-0.1.2-py3-none-any.whl (10.0 kB)
+Installing collected packages: stevedore, PyYAML, pygments, pyflakes, pycodestyle, pluggy, packaging, mdurl, mccabe, iniconfig, coverage, pytest, markdown-it-py, flake8, rich, bandit
+Successfully installed PyYAML-6.0.3 bandit-1.9.4 coverage-7.17.3 flake8-7.5.0 iniconfig-2.3.1 markdown-it-py-4.3.0 mccabe-0.7.0 mdurl-0.1.2 packaging-26.3 pluggy-1.7.0 pycodestyle-2.15.0 pyflakes-4.1.0 pygments-2.21.0 pytest-9.2.0 rich-15.0.0 stevedore-5.10.0
+[Pipeline] isUnix
+[Pipeline] sh
++ venv/bin/python --version
+Python 3.12.14
+[Pipeline] isUnix
+[Pipeline] sh
++ venv/bin/python -m pip freeze
+bandit==1.9.4
+coverage==7.17.3
+flake8==7.5.0
+iniconfig==2.3.1
+markdown-it-py==4.3.0
+mccabe==0.7.0
+mdurl==0.1.2
+packaging==26.3
+pluggy==1.7.0
+pycodestyle==2.15.0
+pyflakes==4.1.0
+Pygments==2.21.0
+pytest==9.2.0
+PyYAML==6.0.3
+rich==15.0.0
+stevedore==5.10.0
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Lint)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] sh
++ venv/bin/python -m flake8 app.py deploy.py tests
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] echo
+Lint passed: no style violations.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] sh
++ venv/bin/python -m pytest tests -v --junitxml=reports/tests.xml
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0 -- /workspace/scratch/9552ff331023/jenkins_home/workspace/Python-CI-CD/venv/bin/python
+cachedir: .pytest_cache
+rootdir: /workspace/scratch/9552ff331023/jenkins_home/workspace/Python-CI-CD
+collecting ... collected 4 items
+
+tests/test_app.py::TestApp::test_another_name PASSED                     [ 25%]
+tests/test_app.py::TestApp::test_entry_point PASSED                      [ 50%]
+tests/test_app.py::TestApp::test_world PASSED                            [ 75%]
+tests/test_deploy.py::TestDeploy::test_release_is_intact_and_runnable PASSED [100%]
+
+- generated xml file: /workspace/scratch/9552ff331023/jenkins_home/workspace/Python-CI-CD/reports/tests.xml -
+============================== 4 passed in 0.04s ===============================
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Coverage)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] sh
++ venv/bin/python -m coverage run --branch --source=app -m pytest tests -v
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0 -- /workspace/scratch/9552ff331023/jenkins_home/workspace/Python-CI-CD/venv/bin/python
+cachedir: .pytest_cache
+rootdir: /workspace/scratch/9552ff331023/jenkins_home/workspace/Python-CI-CD
+collecting ... collected 4 items
+
+tests/test_app.py::TestApp::test_another_name PASSED                     [ 25%]
+tests/test_app.py::TestApp::test_entry_point PASSED                      [ 50%]
+tests/test_app.py::TestApp::test_world PASSED                            [ 75%]
+tests/test_deploy.py::TestDeploy::test_release_is_intact_and_runnable PASSED [100%]
+
+============================== 4 passed in 0.04s ===============================
+[Pipeline] isUnix
+[Pipeline] sh
++ venv/bin/python -m coverage xml -o reports/coverage.xml
+Wrote XML report to reports/coverage.xml
+[Pipeline] isUnix
+[Pipeline] sh
++ venv/bin/python -m coverage html -d reports/coverage_html
+Wrote HTML report to reports/coverage_html/index.html
+[Pipeline] isUnix
+[Pipeline] sh
++ venv/bin/python -m coverage report -m --fail-under=90
+Name     Stmts   Miss Branch BrPart  Cover   Missing
+----------------------------------------------------
+app.py       4      0      2      0   100%
+----------------------------------------------------
+TOTAL        4      0      2      0   100%
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Security Scan)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] sh
++ venv/bin/python -m bandit app.py deploy.py -f json -o reports/bandit.json
+[main]	INFO	profile include tests: None
+[main]	INFO	profile exclude tests: None
+[main]	INFO	cli include tests: None
+[main]	INFO	cli exclude tests: None
+[json]	INFO	JSON output written to file: reports/bandit.json
+[Pipeline] sh
++ cat reports/bandit.json
+{
+  "errors": [],
+  "generated_at": "2026-11-17T18:20:07Z",
+  "metrics": {
+    "./app.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 6,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "./deploy.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 27,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 33,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": []
+}
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] sh
++ venv/bin/python deploy.py --target /workspace/scratch/9552ff331023/jenkins_home/workspace/Python-CI-CD@deployments/1
+Deployed application to /workspace/scratch/9552ff331023/jenkins_home/workspace/Python-CI-CD@deployments/1/app.py
+SHA256: 3be2e54d8dbf225a65a6be4029d5560b310f38218af1440da70eeb31d9b90232
+[Pipeline] sh
++ venv/bin/python /workspace/scratch/9552ff331023/jenkins_home/workspace/Python-CI-CD@deployments/1/app.py
+[Pipeline] sh
++ cp /workspace/scratch/9552ff331023/jenkins_home/workspace/Python-CI-CD@deployments/1/manifest.json reports/deployment-manifest.json
+[Pipeline] sh
++ cat reports/deployment-output.txt
+Hello, World from Nathalio Hassoun!
+[Pipeline] readFile
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] archiveArtifacts
+Archiving artifacts
+Recording fingerprints
+[Pipeline] echo
+All CI/CD stages passed; local deployment verified.
+[Pipeline] deleteDir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
